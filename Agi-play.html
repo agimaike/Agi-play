@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>AGI PLAY — Projetor</title>
+<style>
+:root{--bg:#080808;--panel:#151515;--text:#fff;--muted:#b6b6b6;--red:#e50914;--line:#303030}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:16px}
+header{position:sticky;top:0;z-index:5;background:#080808;border-bottom:1px solid var(--line);padding:14px 20px}
+.top{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{font-size:clamp(25px,3vw,34px);font-weight:900;letter-spacing:3px}.logo span{color:var(--red)}
+.status{font-size:13px;color:#ddd;border:1px solid #444;border-radius:99px;padding:9px 12px}
+main{max-width:1200px;margin:auto;padding:24px 20px 60px}
+.hero{padding:clamp(24px,4vw,48px);border:1px solid #333;border-radius:22px;background:radial-gradient(ellipse at 85% 10%,#4a090d 0%,#191010 34%,#111 74%);margin-bottom:26px}
+.kicker{font-size:12px;letter-spacing:2px;color:#ff7379;font-weight:800}
+h1{font-size:clamp(32px,5vw,58px);line-height:1.02;margin:14px 0}
+p{line-height:1.5}.hero p{max-width:720px;color:#d0d0d0}
+.search{display:flex;gap:10px;max-width:780px;margin-top:20px}
+input{min-width:0;flex:1;background:#080808;border:2px solid #555;border-radius:12px;color:white;padding:16px;font-size:18px}
+button,.btn{background:var(--red);color:white;border:0;border-radius:12px;padding:15px 20px;font-size:16px;font-weight:800;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:50px}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+button.secondary,.btn.secondary{background:#252525;border:1px solid #555}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+h2{font-size:clamp(22px,3vw,30px);margin:30px 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:#1a1a1a;border:1px solid #444;border-radius:999px;padding:12px 17px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid #303030;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.poster{height:90px;border-radius:12px;background:linear-gradient(135deg,#303030,#111);display:flex;align-items:center;justify-content:center;font-size:32px}
+.card h3{margin:0;font-size:20px}.card p{margin:0;color:var(--muted);font-size:14px;flex:1}
+.results{display:grid;gap:12px}
+.result{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid #303030;border-radius:14px;padding:16px}
+.result strong{font-size:18px}.result small{display:block;color:var(--muted);margin-top:5px;line-height:1.4}
+.hidden{display:none}
+.player{background:#101010;border:1px solid #333;border-radius:18px;padding:18px;margin-top:20px}
+.player video{width:100%;max-height:68vh;background:#000;border-radius:12px;display:block}
+.player-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+footer{text-align:center;border-top:1px solid #303030;color:#888;padding:22px;font-size:12px;line-height:1.6}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.search{flex-direction:column}.search button{width:100%}.result{align-items:flex-start;flex-direction:column}.result .btn{width:100%}.status{font-size:11px}}
+@media(max-width:420px){main{padding:16px 12px 40px}.grid{grid-template-columns:1fr}.hero{padding:22px 16px}.top{gap:8px}.status{max-width:130px;text-align:center}}
+/* D-pad / remote friendly focus */
+@media (hover:none) and (pointer:coarse){button,.btn,.chip{min-height:54px;padding:15px 18px}input{min-height:56px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="logo">AGI<span>•</span>PLAY</div><div class="status">MODO PROJETOR · ANDROID</div></div></header>
+<main>
+<section class="hero">
+<div class="kicker">ENTRETENIMENTO NA TELA GRANDE</div>
+<h1>Seu próximo play<br>começa na AGI.</h1>
+<p>Interface simplificada para projetores Android, controles remotos e telas grandes. Pesquise um título e abra uma fonte autorizada para assistir.</p>
+<form class="search" id="searchForm"><input id="query" type="search" placeholder="Buscar filme ou série..." aria-label="Buscar filme ou série"><button type="submit">Pesquisar</button></form>
+<p class="note">Dica: use as setas e o botão OK do controle remoto. Se estiver usando o celular, a página também se adapta à tela pequena.</p>
+</section>
+
+<section id="searchSection" class="hidden">
+<h2>Resultados da pesquisa</h2><div id="results" class="results"></div>
+</section>
+
+<h2>Explorar categorias</h2>
+<div class="chips">
+<button class="chip" data-term="ação">Ação</button><button class="chip" data-term="comédia">Comédia</button><button class="chip" data-term="terror">Terror</button><button class="chip" data-term="romance">Romance</button><button class="chip" data-term="suspense">Suspense</button><button class="chip" data-term="documentários">Documentários</button><button class="chip" data-term="filmes brasileiros">Brasileiros</button><button class="chip" data-term="animação">Animação</button>
+</div>
+
+<h2>Fontes para assistir</h2>
+<div class="grid">
+<article class="card"><div class="poster">▶</div><h3>YouTube</h3><p>Pesquise títulos publicados oficialmente, incluindo produções gratuitas quando disponíveis.</p><a class="btn" href="https://www.youtube.com/" target="_blank" rel="noopener">Abrir YouTube</a></article>
+<article class="card"><div class="poster">✦</div><h3>Pluto TV</h3><p>Canais ao vivo e conteúdo sob demanda, conforme a disponibilidade na sua região.</p><a class="btn" href="https://pluto.tv/" target="_blank" rel="noopener">Abrir Pluto TV</a></article>
+<article class="card"><div class="poster">▶</div><h3>Tela Brasil</h3><p>Explore obras audiovisuais brasileiras disponíveis no portal.</p><a class="btn" href="https://telabrasil.cultura.gov.br/" target="_blank" rel="noopener">Abrir Tela Brasil</a></article>
+</div>
+
+<section class="player" id="playerSection">
+<h2>Reprodutor de vídeo</h2>
+<p class="note">O reprodutor abaixo aceita um endereço direto de vídeo que você tenha autorização para reproduzir (por exemplo, um arquivo MP4 ou uma transmissão HLS compatível). Links comuns de páginas de filmes não são links diretos de vídeo.</p>
+<form class="search" id="videoForm"><input id="videoUrl" type="url" placeholder="Cole aqui um link direto de vídeo autorizado" aria-label="Link direto do vídeo"><button type="submit">Carregar vídeo</button></form>
+<video id="video" controls playsinline preload="metadata"></video>
+<div class="player-actions">
+<button type="button" class="secondary" id="fullscreenBtn">Tela cheia</button>
+<button type="button" class="secondary" id="openVideoBtn">Abrir vídeo em nova aba</button>
+</div>
+<p class="note">Compatibilidade com Web Video Cast: para enviar para outro aparelho, use a opção de compartilhamento/abrir do aplicativo Web Video Cast e um endereço de mídia direto compatível. A página não consegue forçar o cast nem extrair fluxos protegidos ou privados.</p>
+</section>
+</main>
+<footer>AGI PLAY • Protótipo otimizado para Android e telas grandes<br>Reprodução apenas de mídias autorizadas. O funcionamento de casting depende do navegador, aplicativo, dispositivo e formato do vídeo.</footer>
+<script>
+const form=document.getElementById('searchForm'),input=document.getElementById('query'),section=document.getElementById('searchSection'),results=document.getElementById('results');
+function search(term){
+ term=(term||'').trim();if(!term){input.focus();return}input.value=term;section.classList.remove('hidden');results.innerHTML='';
+ const q=encodeURIComponent(term);
+ const sources=[
+ {name:'YouTube',desc:'Pesquisar este título em vídeos e fontes oficiais',url:'https://www.youtube.com/results?search_query='+q+'+filme+oficial'},
+ {name:'Pluto TV',desc:'Abrir o serviço e verificar o catálogo disponível',url:'https://pluto.tv/'},
+ {name:'Tela Brasil',desc:'Consultar produções audiovisuais brasileiras',url:'https://telabrasil.cultura.gov.br/'},
+ {name:'Netflix',desc:'Pesquisar no catálogo se você tiver acesso',url:'https://www.netflix.com/search?q='+q}
+ ];
+ const note=document.createElement('div');note.className='result';note.textContent='Resultados para “'+term+'”. A disponibilidade e a reprodução dependem do serviço de origem.';results.appendChild(note);
+ sources.forEach(s=>{const row=document.createElement('div');row.className='result';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=s.name;const small=document.createElement('small');small.textContent=s.desc;info.append(strong,small);const a=document.createElement('a');a.className='btn';a.href=s.url;a.target='_blank';a.rel='noopener';a.textContent='Abrir fonte';row.append(info,a);results.appendChild(row)});
+ section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+form.addEventListener('submit',e=>{e.preventDefault();search(input.value)});
+document.querySelectorAll('[data-term]').forEach(b=>b.addEventListener('click',()=>search(b.dataset.term)));
+const video=document.getElementById('video'),urlInput=document.getElementById('videoUrl');
+document.getElementById('videoForm').addEventListener('submit',e=>{e.preventDefault();const url=urlInput.value.trim();if(!url)return;try{const parsed=new URL(url);if(!['http:','https:'].includes(parsed.protocol))throw new Error();video.src=parsed.href;video.load();video.scrollIntoView({behavior:'smooth',block:'center'});}catch{alert('Insira um endereço HTTP ou HTTPS válido.')}});
+document.getElementById('fullscreenBtn').addEventListener('click',()=>{if(video.requestFullscreen)video.requestFullscreen();else if(video.webkitEnterFullscreen)video.webkitEnterFullscreen()});
+document.getElementById('openVideoBtn').addEventListener('click',()=>{if(urlInput.value.trim())window.open(urlInput.value.trim(),'_blank','noopener')});
+</script>
+</body>
+</html>
